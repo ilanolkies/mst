@@ -178,15 +178,45 @@ void* mstParaleloThread (void *p) {
     }
 }
 
+int menorAlcanzable(int alcanzables[], bool alcanzados[], int n)
+{
+    // Initialize min value
+    int min = INT_MAX, min_index;
+
+    for (int i = 0; i < n; i++)
+        if (!alcanzados[i] && alcanzables[i] < min)
+            min = alcanzables[i], min_index = i;
+
+    return min_index;
+}
+
 void mstSecuencial (Grafo *g) {
-    // empiezo por un nodo
-    // tomo mis aristas alcanzables
-    //mientras aun tenga ristas alcanzables
-        // elijo la menor arista alcanzable
-        // la alcanzo
-        // la elimino de mi lista de alcanzables
-        // busco mis nuevas aristas alcanzables
-            // si una de esas aristas esta alcanzada no la recuerdo como alcanzable
+    int n = g->numVertices;
+
+    int arbolMinimo[n]; // para cada vertice almacena el padre en el mst
+    int alcanzables[n]; // las aristas alcanzables en un momento dado
+    bool alcanzados[n]; // las aristas ya incluidas en el mst
+
+    for (size_t i = 0; i < n; i++)
+        alcanzables[i] = INT_MAX, alcanzados[i] = false;
+
+    arbolMinimo[0] = -1;
+    alcanzables[0] = 0;
+
+    for (size_t i = 0; i < n-1; i++)
+    {
+        int m = menorAlcanzable(alcanzables, alcanzados, n);
+        alcanzados[m] = true;
+
+        vector<Eje> adyacencias = g->listaDeAdyacencias[m];
+        for(vector<Eje>::iterator j = adyacencias.begin(); j != adyacencias.end(); j++)
+            if (!alcanzados[j->nodoDestino] && j->peso < alcanzables[j->nodoDestino])
+                arbolMinimo[j->nodoDestino] = m, alcanzables[j->nodoDestino] = j->peso;
+
+    }
+
+    for (int i = 0; i < n; i++)
+        printf("%d - ", arbolMinimo[i]);
 }
 
 void mstParalelo(Grafo *g, int cantThreads)
