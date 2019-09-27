@@ -14,5 +14,5 @@ make
   ```
 - Pralelo (`N` threads)
   ```
-  ./tp1 <input_file> input.txt N
+  ./tp1 <input_file> N
   ```
